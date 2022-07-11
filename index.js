@@ -4,12 +4,11 @@
 
 import express from "express";                  // New way for importing packages "type" : "module"
 import { MongoClient } from "mongodb";          // New way for importing packages "type" : "module"
+import dotenv from "dotenv";
 
+dotenv.config();
 
 const app = express()                       // Assigning function to a variable on which all http methods is performed
-
-
-app.use(express.json())                     // This middleware handles centrally all the post opertaion by informing node that the data we are getting is json data
 
 
 // Local data to perform operations
@@ -94,13 +93,19 @@ app.use(express.json())                     // This middleware handles centrally
 //       trailer: "https://www.youtube.com/embed/NgsQ8mVkN8w"
 //     }
 // ];
-  
+
+
+app.use(express.json())                     // This middleware handles centrally all the post opertaion by informing node that the data we are getting is json data
+
+
+
+// const mongo_url = "mongodb://127.0.0.1"         // accesing from local MongoDB on machine
+
+const mongo_url = process.env.mongo_url;                      // accesing MongoDB from mongo deployed to Atlas
+
+console.log(process.env.mongo_url);
 
 // Building APIs
-
-
-const mongo_url = "mongodb://127.0.0.1"
-
 
 // establishing connection with MongoDB locally
 async function createConnection(){
