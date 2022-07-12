@@ -5,8 +5,12 @@
 import express from "express";                  // New way for importing packages "type" : "module"
 import { MongoClient } from "mongodb";          // New way for importing packages "type" : "module"
 import dotenv from "dotenv";
+import {moviesRouter} from "./routes/movies.js"               // extension is must while importing in NodeJS
+
+
 
 dotenv.config();
+
 
 const app = express()                       // Assigning function to a variable on which all http methods is performed
 
@@ -102,6 +106,10 @@ app.use(express.json())                     // This middleware handles centrally
 
 
 
+app.use("/movies", moviesRouter);           // if path starts with "/movies" got to moviesRouter
+
+
+
 // const mongo_url = "mongodb://127.0.0.1"         // accesing from local MongoDB on machine
 
 const mongo_url = process.env.mongo_url;                      // accesing MongoDB from mongo deployed to Atlas
@@ -118,7 +126,7 @@ async function createConnection(){
     return client;
 }
 
-const client = await createConnection();
+export const client = await createConnection();
 
 
 
@@ -127,81 +135,6 @@ app.get('/', function (request, response) {
 })
 
 
-// get all movies
-app.get('/movies', async function (request, response) {
-    
-    // sending the local data from index.js file
-    // response.send(movie);
-
-
-    // sending the data from MongoDB 
-    if(request.query.rating){
-        request.query.rating = +request.query.rating;
-    }
-    const result = await client.db("guvi").collection("movies").find(request.query).toArray();                   // converting cursor (i.e.. returned by find operations) to Array
-    response.send(result);
-})
-
-
-// get movies by id
-app.get('/movies/:id', async function (request, response) {
-
-    // for dynamic url we get the dynamic value from request.params which stores the dynamic part as an object
-    const {id} = request.params;
-
-
-    // Operation with local data
-    // let final = movies.find((ele)=> ele.id === id)
-
-
-    // Operation with MongoDB connection
-    const final = await client.db("guvi").collection("movies").findOne({id: id});
-
-
-    final ? response.send(final) : response.status(404).send("No movies found")
-    console.log(response);
-})
-
-
-// delete movies by id
-app.delete('/movies/:id', async function (request, response) {
-
-    // for dynamic url we get the dynamic value from request.params which stores the dynamic part as an object
-    const {id} = request.params;
-
-    // Operation with MongoDB
-    const final = await client.db("guvi").collection("movies").deleteOne({id: id});
-
-    final.deletedCount>0 ? response.send(final) : response.status(404).send("No movies found")
-    console.log(response);
-})
-
-
-// Update movies by id
-app.put('/movies/:id', async function (request, response) {
-
-    // for dynamic url we get the dynamic value from request.params which stores the dynamic part as an object
-    const {id} = request.params;
-
-    // Catching the data passed inside body
-    const data = request.body;
-
-    // Operation with MongoDB connection
-    const final = await client.db("guvi").collection("movies").updateOne({id : id}, {$set : data});
-
-    final.modifiedCount>0 ? response.send(final) : response.status(404).send("No movies found");
-})
-
-
-// create movies with postman
-app.post('/movies', async function (request, response) {
-
-    const data = request.body;
-
-    // inserting the data in MongoDB
-    const result = await client.db("guvi").collection("movies").insertMany(data);
-    response.send(result)               // The response that we are sending is going to give us the insert operation result in mongo DB i.e... id
-})
 
 
 app.listen(PORT)                            // The application is listening to port number specified
