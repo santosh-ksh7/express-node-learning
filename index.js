@@ -11,6 +11,9 @@ dotenv.config();
 const app = express()                       // Assigning function to a variable on which all http methods is performed
 
 
+const PORT = process.env.PORT;              // Auto assigning port number for Heroku
+
+
 // Local data to perform operations
 
 // const movies = [
@@ -132,7 +135,10 @@ app.get('/movies', async function (request, response) {
 
 
     // sending the data from MongoDB 
-    const result = await client.db("guvi").collection("movies").find().toArray();                   // converting cursor (i.e.. returned by find operations) to Array
+    if(request.query.rating){
+        request.query.rating = +request.query.rating;
+    }
+    const result = await client.db("guvi").collection("movies").find(request.query).toArray();                   // converting cursor (i.e.. returned by find operations) to Array
     response.send(result);
 })
 
@@ -157,6 +163,36 @@ app.get('/movies/:id', async function (request, response) {
 })
 
 
+// delete movies by id
+app.delete('/movies/:id', async function (request, response) {
+
+    // for dynamic url we get the dynamic value from request.params which stores the dynamic part as an object
+    const {id} = request.params;
+
+    // Operation with MongoDB
+    const final = await client.db("guvi").collection("movies").deleteOne({id: id});
+
+    final.deletedCount>0 ? response.send(final) : response.status(404).send("No movies found")
+    console.log(response);
+})
+
+
+// Update movies by id
+app.put('/movies/:id', async function (request, response) {
+
+    // for dynamic url we get the dynamic value from request.params which stores the dynamic part as an object
+    const {id} = request.params;
+
+    // Catching the data passed inside body
+    const data = request.body;
+
+    // Operation with MongoDB connection
+    const final = await client.db("guvi").collection("movies").updateOne({id : id}, {$set : data});
+
+    final.modifiedCount>0 ? response.send(final) : response.status(404).send("No movies found");
+})
+
+
 // create movies with postman
 app.post('/movies', async function (request, response) {
 
@@ -168,4 +204,4 @@ app.post('/movies', async function (request, response) {
 })
 
 
-app.listen(4000)                            // The application is listening to port number specified
+app.listen(PORT)                            // The application is listening to port number specified
