@@ -6,6 +6,8 @@ import express from "express";                  // New way for importing package
 import { MongoClient } from "mongodb";          // New way for importing packages "type" : "module"
 import dotenv from "dotenv";
 import {moviesRouter} from "./routes/movies.js"               // extension is must while importing in NodeJS
+import cors from 'cors';                                      // Importing the cors package to allow traffic
+
 
 
 
@@ -13,6 +15,9 @@ dotenv.config();
 
 
 const app = express()                       // Assigning function to a variable on which all http methods is performed
+
+
+app.use(cors())                             // stated to tell that now on use cors 
 
 
 const PORT = process.env.PORT;              // Auto assigning port number for Heroku
