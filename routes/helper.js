@@ -1,7 +1,7 @@
 import { client } from "../index.js";
 
 export async function createMovies(data) {
-    return await client.db("guvi").collection("movies").insertMany(data);
+    return await client.db("guvi").collection("movies").insertOne(data);
 }
 export async function updateMoviesById(id, data) {
     return await client.db("guvi").collection("movies").updateOne({ id: id }, { $set: data });
