@@ -16,3 +16,19 @@ export async function getMoviesById(id) {
 export async function getAllMovies(request) {
     return await client.db("guvi").collection("movies").find(request.query).toArray();
 }
+
+
+
+
+// creating users
+
+export async function createuser(data) {
+    return await client.db("guvi").collection("users").insertOne(data);
+}
+
+
+// checking for user in db
+
+export async function getUserByName(username){
+    return await client.db("guvi").collection("users").findOne({username : username});
+}

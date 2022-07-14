@@ -5,7 +5,8 @@
 import express from "express";                  // New way for importing packages "type" : "module"
 import { MongoClient } from "mongodb";          // New way for importing packages "type" : "module"
 import dotenv from "dotenv";
-import {moviesRouter} from "./routes/movies.js"               // extension is must while importing in NodeJS
+import {moviesRouter} from "./routes/movies.js" ;              // extension is must while importing in NodeJS
+import { usersRouter } from "./routes/users.js";
 import cors from 'cors';                                      // Importing the cors package to allow traffic
 
 
@@ -112,6 +113,10 @@ app.use(express.json())                     // This middleware handles centrally
 
 
 app.use("/movies", moviesRouter);           // if path starts with "/movies" got to moviesRouter
+
+
+
+app.use("/users", usersRouter);            // if path starts with "/users" got to usersRouter
 
 
 
